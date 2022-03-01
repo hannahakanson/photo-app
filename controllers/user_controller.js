@@ -1,7 +1,7 @@
 const models = require('../models');
-const debug = require('debug')('photoapp:register_controller');
- const bcrypt = require('bcrypt');
- const { matchedData, validationResult } = require('express-validator');
+const debug = require('debug')('photoapp:user_controller');
+const bcrypt = require('bcrypt');
+const { matchedData, validationResult } = require('express-validator');
 
 /**
  * Get all resources
