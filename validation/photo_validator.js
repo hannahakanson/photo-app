@@ -6,12 +6,27 @@
  const models = require('../models');
 
  /**
-  * Create User validation rules
+  * Create Photo validation rules
   *
   */
-//   const createRules = [
-//     body('first_name').exists().isLength({ min: 4 }),
-//     body('last_name').exists().isLength({min: 4}),
-//     body('password').exists().isLength({min: 8}),
-//     body('email').isEmail()
-// ];
+const createRules = [
+    body('title').exists().isLength({ min: 4 }),
+    body('url').exists(),
+    body('comment').optional()
+];
+
+ /**
+  * Update Photo validation rules
+  *
+  * 
+  */
+  const updateRules = [
+    body('last_name').exists().isLength({ min: 4 }),
+];
+
+module.exports = {
+    createRules,
+    updateRules,
+}
+
+// 
