@@ -10,9 +10,8 @@
   * HTTP Basic Authentication
   */
  const basic = async (req, res, next) => {
-     debug("Debugger - auth.basic!");
+     debug("Debugger - auth.basic");
  
-     // check if authorization header exists
      if (!req.headers.authorization) {
          debug("Authorization header is missing");
  
@@ -22,11 +21,10 @@
          });
      }
  
-     debug("Authorization header: %o", req.headers.authorization);
+     debug("Authorization header: ", req.headers.authorization);
  
      const [authSchema, base64Payload] = req.headers.authorization.split(' ');
  
-     // if authSchema isn't "basic", then bail
      if (authSchema.toLowerCase() !== "basic") {
          debug("Authorization schema isn't basic");
  
@@ -36,12 +34,11 @@
          });
      }
  
-     // decode payload from base64 => ascii
      const decodedPayload = Buffer.from(base64Payload, 'base64').toString('ascii');
 
      const [email, password] = decodedPayload.split(':');
  
-     // find user based on email 
+     // Find user based on email 
      const user = await new User({ email }).fetch({ require: false });
      if (!user) {
          return res.status(401).send({
@@ -51,8 +48,7 @@
      }
      const hash = user.get('password');
  
-     // hash the incoming cleartext password using the salt from the db
-     // and compare if the generated hash matches the db-hash
+     // Hash the incoming password and compare if the generated hash matches the db-hash
      const result = await bcrypt.compare(password, hash);
      if (!result) {
          return res.status(401).send({
@@ -61,10 +57,10 @@
          });
      }
  
-     // finally, attach user to request
+     // Attach user to request
      req.user = user;
  
-     // pass request along
+     // Pass request along
      next();
  }
  

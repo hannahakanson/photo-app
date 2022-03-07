@@ -3,21 +3,6 @@ const debug = require('debug')('photoapp:user_controller');
 const bcrypt = require('bcrypt');
 const { matchedData, validationResult } = require('express-validator');
 
-/**
- * Get all resources
- *
- * GET /
- */
-const read = async (req, res) => {
-	const all_Users = await models.User.fetchAll();
-
-	res.send({
-		status: 'success',
-		data: {
-            users: all_Users,
-        },
-	});
-}
 
 
 /**
@@ -26,19 +11,14 @@ const read = async (req, res) => {
  * POST /
  */
  const register = async (req, res) => {
-	// check for any validation errors
+
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
 		return res.status(422).send({ status: 'fail', data: errors.array() });
 	}
 
-	// get only the validated data from the request
 	const validData = matchedData(req);
 
-	console.log("The validated data:", validData);
-
-	// generate a hash of `validData.password`
-	// and overwrite `validData.password` with the generated hash
 	try {
 		validData.password = await bcrypt.hash(validData.password, 10);
 
@@ -52,7 +32,7 @@ const read = async (req, res) => {
 
 	try {
 		const user = await new models.User(validData).save();
-		debug("Created new user successfully: %O", user);
+		debug("Created new user successfully:", user);
 
 		res.send({
 			status: 'success',
@@ -74,6 +54,5 @@ const read = async (req, res) => {
 
 
 module.exports = {
-    read,
 	register
 };

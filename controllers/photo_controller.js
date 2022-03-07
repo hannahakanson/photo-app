@@ -1,104 +1,108 @@
 const models = require('../models');
 const debug = require('debug')('photoapp:photo_controller');
-const bcrypt = require('bcrypt');
+//const bcrypt = require('bcrypt'); ---- behövs inte?
 const { matchedData, validationResult } = require('express-validator');
-const { ResultWithContext } = require('express-validator/src/chain');
 
-/**
- * Get all photos
- *
- * GET /
- */
+
+
+
+
+//** Get all photos
+/*
+ GET /
+*/
+
 const read = async (req, res) => {
-	await req.user.load('photos');
+  await req.user.load('photos');
 
-	res.status(200).send({
-		status: 'success',
-		data: {
-            photos: req.user.related('photos')
-        },
-	});
-}
-
-/**
- * Get one photo
- *
- * GET /
- */
-
- const show = async (req, res) => {
-	const photo = await new models.Photo({ id: req.params.photoId }).fetch();
-
-	res.send({
-		status: 'success',
-		data: {
-			photo,
-		}
-	});
+  res.status(200).send({
+      status: 'success',
+      data: {
+          photos: req.user.related('photos'),
+      },
+  });
 }
 
 
-/**
- * Get authenticated user's photos
- *
- * GET /photos
- */
-//  const getPhotos = async (req, res) => {
-// 	// get user and also eager-load the photo-relation
-// 	const user = await new models.User({ id: req.user.id })
-//     .fetch({ withRelated: ['photos'] });
 
-// 	// "lazy load" the photo-relation
-// 	await req.user.load('photos');
+//** Get single photo
+/*
+ GET /
+*/
 
-// 	res.status(200).send({
-// 		status: 'success',
-// 		data: {
-// 			photos: req.user.related('photos'),
-// 		},
-// 	});
-// }
+ const singlePhoto = async (req, res) => {
+      await req.user.load('photos');
+
+      const chosen_photo = await new models.Photo({ id: req.params.photoId })
+      .fetch();
+      
+      const related_photos= req.user.related('photos');
+
+      existing_photo = related_photos.find(photo => photo.id == chosen_photo.id);
+
+      res.status(200).send({
+          status: 'success',
+          data: {
+              existing_photo,
+          },
+      });
+}
 
 
-/**
- * Post new photo
- *
- * POST /
- */
+//** Post a photo
+/*
+ POST /
+*/
 
 const create = async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(422).send({status: "fail", data: errors.array()});
-    } 
+  
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+      return res.status(422).send({ status: 'fail', data: errors.array() });
+  }
 
-    //säkerställa att vi bara tar in den information vi vill (title, url, comment)
-    const validData = matchedData(req);
 
-try {
-    const photo = await new models.Photo(validData).save();
-    debug("Created new photo successfully: %O", book);
+  const userID = req.user.id;
+  const validData = matchedData(req);
+  validData.user_id = userID;
 
-    res.send({
-        status: 'success',
-        data: {
-            photo,
-        },
-    });
+  try {
+      const photo = await new models.Photo(validData).save();
+      debug("Created new photo successfully: ", photo);
 
-} catch (error) {
-    res.status(500).send({
-        status: 'error',
-        message: 'Exception thrown in database when creating a new photo.',
-    });
-    throw error;
+      console.log('Your beautiful photo'+photo);
+
+      res.send({
+          status: 'success',
+          data: {
+              title: validData.title,
+              url: validData.url,
+              comment: validData.comment,
+              user_id: validData.user_id
+
+          },
+      });
+
+  } catch (error) {
+      res.status(500).send({
+          status: 'error',
+          message: 'Exception thrown in database when creating a new photo.',
+      });
+      throw error;
+  }
 }
-}
+
+
+//** Update a photo
+/*
+ PUT /
+*/
+
 
 
 
 module.exports = {
-    read,
-    show,
-    create,
+  read,
+  singlePhoto,
+  create
 };

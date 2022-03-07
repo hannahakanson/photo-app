@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const logger = require('morgan');
 
-// instantiate express
+// to use express
 const app = express();
 
 // middlewares

@@ -3,23 +3,25 @@ const router = express.Router();
 const photoController = require('../controllers/photo_controller');
 const photoValidationRules = require('../validation/photo_validator');
 
-/* Get all resources */
-//router.get('/', photoController.read);
-
-/* Get all your own photos */
+//** GET */
+/* Get all your own photos 
+Path: /photos/ */
 router.get('/', photoController.read);
 
-/* Get a specific photo */
-router.get('/:photoId', photoController.show);
+/* Get a specific photo 
+path: /photos/:photoId */
+router.get('/:photoId', photoController.singlePhoto);
 
 
-// /* Post a new photo */
+//** POST */
+/* Post a new photo 
+Path: /photos */
 router.post('/', photoValidationRules.createRules, photoController.create);
 
-// /* Update a specific resource */
-// router.put('/:exampleId', exampleValidationRules.updateRules, exampleController.update);
+//** PUT */
+/* Update a specific photo 
+Path: /photos/:photoId */
+//router.put('/:photoId', photoValidationRules.updateRules, photoController.update);
 
-// /* Destroy a specific resource */
-// router.delete('/:exampleId', exampleController.destroy);
 
 module.exports = router;
