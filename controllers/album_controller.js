@@ -3,7 +3,6 @@
  */
 
  const debug = require('debug')('photoapp:album_controller');
- //const bcrypt = require('bcrypt');  ----behövs inte?
  const { matchedData, validationResult } = require('express-validator');
  const models = require('../models');
  const { Album } = require('../models');

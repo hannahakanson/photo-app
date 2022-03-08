@@ -12,9 +12,9 @@
   */
 
 const createRules = [
-    body('title').exists().isLength({ min: 4 }),
-    body('url').exists(),
-    body('comment').optional()
+    body('title').exists().isLength({ min: 3 }),
+    body('url').exists().isURL(),
+    body('comment').optional().isLength({ min: 3 })
 ];
 
 

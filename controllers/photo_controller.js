@@ -1,6 +1,5 @@
 const models = require('../models');
 const debug = require('debug')('photoapp:photo_controller');
-//const bcrypt = require('bcrypt'); ---- behövs inte?
 const { matchedData, validationResult } = require('express-validator');
 
 
@@ -13,12 +12,15 @@ const { matchedData, validationResult } = require('express-validator');
 */
 
 const read = async (req, res) => {
-  await req.user.load('photos');
 
-  res.status(200).send({
+    user_id = req.user.id;
+ 
+    const allPhotos = await new models.Photo().where({ user_id: user_id}).fetchAll({ columns: ['id', 'title', 'url', 'comment']})
+
+    res.status(200).send({
       status: 'success',
       data: {
-          photos: req.user.related('photos'),
+          photos: allPhotos,
       },
   });
 }
@@ -32,18 +34,16 @@ const read = async (req, res) => {
 
  const singlePhoto = async (req, res) => {
       await req.user.load('photos');
+      user_id = req.user.id;
 
-      const chosen_photo = await new models.Photo({ id: req.params.photoId })
-      .fetch();
-      
-      const related_photos= req.user.related('photos');
+      const chosenPhoto = await new models.Photo().where({ id: req.params.photoId }).fetchAll({ columns: ['id', 'title', 'url', 'comment']})
 
-      existing_photo = related_photos.find(photo => photo.id == chosen_photo.id);
+      const existingPhoto = req.user.related('photos').find(photo => photo.id == chosenPhoto.id);
 
       res.status(200).send({
           status: 'success',
           data: {
-              existing_photo,
+              existingPhoto
           },
       });
 }
@@ -62,24 +62,20 @@ const create = async (req, res) => {
   }
 
 
-  const userID = req.user.id;
+  //const userID = req.user.id;
   const validData = matchedData(req);
-  validData.user_id = userID;
+  //validData.user_id = userID;
 
   try {
       const photo = await new models.Photo(validData).save();
       debug("Created new photo successfully: ", photo);
 
-      console.log('Your beautiful photo'+photo);
+      console.log('Your beautiful photo'+ photo);
 
       res.send({
           status: 'success',
           data: {
-              title: validData.title,
-              url: validData.url,
-              comment: validData.comment,
-              user_id: validData.user_id
-
+              photo
           },
       });
 

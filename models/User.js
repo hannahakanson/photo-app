@@ -7,6 +7,9 @@
 		tableName: 'users',
 		photos() {
 			return this.hasMany('Photo');
+		}, 
+		albums() {
+			return this.hasMany('Album');
 		}
 	});
 };
