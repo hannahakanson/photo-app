@@ -13,16 +13,13 @@
      body('title').exists().isLength({ min: 3 }),
      body('user_id').optional().isInt(),
  ];
+
+ /**
+  * Add photo to album validation rules
+  */
  
   const addPhotoRules = [
-     body('photo_id').exists().bail().custom(async value => {
-         const photo = await new models.Photo({ id: value }).fetch({ require: false });
-         if (!photo) {
-             return Promise.reject(`Photo with ID ${value} does not exist.`);
-         }
-
-         return Promise.resolve();
-     }),
+     body('photo_id').exists().isInt(),
  ];
 
  const updateRules = [

@@ -10,7 +10,7 @@ router.get('/', photoController.read);
 
 /* Get a specific photo 
 path: /photos/:photoId */
-router.get('/:photoId', photoController.singlePhoto);
+router.get('/:photoId', photoController.show);
 
 
 //** POST */
@@ -21,7 +21,7 @@ router.post('/', photoValidationRules.createRules, photoController.create);
 //** PUT */
 /* Update a specific photo 
 Path: /photos/:photoId */
-//router.put('/:photoId', photoValidationRules.updateRules, photoController.update);
+router.put('/:photoId', photoValidationRules.updateRules, photoController.update);
 
 
 module.exports = router;

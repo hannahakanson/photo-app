@@ -10,6 +10,11 @@
 		},
 		albums() {
 			return this.belongsToMany('Album', 'photos_albums', 'photo_id', 'album_id');
-		}
+		},
+	},
+	{
+		async fetchById(id, fetchOptions = {}) {
+			return await new this({ id }).fetch(fetchOptions);
+		},
 	});
 };

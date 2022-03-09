@@ -1,3 +1,7 @@
+/**
+ * User Controller
+ */
+
 const models = require('../models');
 const debug = require('debug')('photoapp:user_controller');
 const bcrypt = require('bcrypt');

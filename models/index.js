@@ -20,7 +20,7 @@ models.User = require('./User')(bookshelf);
 models.Photo = require('./Photo')(bookshelf);
 models.Album = require('./Album')(bookshelf);
 
-
+// Exports
 module.exports = {
 	bookshelf,
 	...models,

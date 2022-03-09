@@ -11,7 +11,7 @@ router.get('/', albumController.read);
 
 /* Get a specific album 
 Path: /albums/:albumId */
-router.get('/:albumId', albumController.singleAlbum);
+router.get('/:albumId', albumController.show);
 
 
 //** POST */
@@ -26,6 +26,6 @@ router.post('/:albumId/photos', albumValidationRules.addPhotoRules, albumControl
 //** PUT */
 /* Update an album
 Path: /albums/:albumId */
-//router.put('/:albumId/', albumValidationRules.updateRules, albumController.update);
+router.put('/:albumId/', albumValidationRules.updateRules, albumController.update);
 
 module.exports = router;

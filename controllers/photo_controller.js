@@ -1,8 +1,10 @@
+/**
+ * Photo Controller
+ */
+
 const models = require('../models');
 const debug = require('debug')('photoapp:photo_controller');
 const { matchedData, validationResult } = require('express-validator');
-
-
 
 
 
@@ -15,7 +17,8 @@ const read = async (req, res) => {
 
     user_id = req.user.id;
  
-    const allPhotos = await new models.Photo().where({ user_id: user_id}).fetchAll({ columns: ['id', 'title', 'url', 'comment']})
+    const allPhotos = await new models.Photo().where({ user_id: user_id})
+    .fetchAll({ columns: ['id', 'title', 'url', 'comment']})
 
     res.status(200).send({
       status: 'success',
@@ -27,25 +30,32 @@ const read = async (req, res) => {
 
 
 
+
+
 //** Get single photo
 /*
  GET /
 */
 
- const singlePhoto = async (req, res) => {
-      await req.user.load('photos');
-      user_id = req.user.id;
+const show = async (req, res) => {
+    
+    user_id = req.user.id,
+    photo_id = req.params.photoId;
 
-      const chosenPhoto = await new models.Photo().where({ id: req.params.photoId }).fetchAll({ columns: ['id', 'title', 'url', 'comment']})
+    const chosenPhoto = await new models.Photo().where( {user_id: user_id, id: photo_id }).fetchAll({columns: ['id', 'title', 'url', 'comment']});
 
-      const existingPhoto = req.user.related('photos').find(photo => photo.id == chosenPhoto.id);
+    if(chosenPhoto.isEmpty()) {
+        res.status(404).send({
+            status: 'error',
+            message: 'Photo was not found'
+        })
+    } else {
+        res.status(200).send({
+        status: 'success',
+        data: chosenPhoto,
+    });
+    }
 
-      res.status(200).send({
-          status: 'success',
-          data: {
-              existingPhoto
-          },
-      });
 }
 
 
@@ -62,20 +72,17 @@ const create = async (req, res) => {
   }
 
 
-  //const userID = req.user.id;
   const validData = matchedData(req);
-  //validData.user_id = userID;
+  validData.user_id = req.user.id;
 
   try {
       const photo = await new models.Photo(validData).save();
       debug("Created new photo successfully: ", photo);
 
-      console.log('Your beautiful photo'+ photo);
-
       res.send({
           status: 'success',
           data: {
-              photo
+            photo
           },
       });
 
@@ -94,11 +101,58 @@ const create = async (req, res) => {
  PUT /
 */
 
+const update = async (req, res) => {
+    //Check for validation errors
+   const errors = validationResult(req);
+   if (!errors.isEmpty()) {
+       return res.status(422).send({ status: 'fail', data: errors.array() });
+   }
+
+    // Load the auth users photos
+   await req.user.load('photos');
+
+   const userPhotos = req.user.related('photos');
+
+   // Check if the photo belongs to the user
+   const userPhoto = userPhotos.find(photo => photo.id == req.params.photoId);
+   const photo = await new models.Photo({ id: req.params.photoId }).fetch();
+
+   const validData = matchedData(req);
+
+   // Return fail message if it doesn't belong to the user
+   if (!userPhoto) {
+       return res.send({
+           status: 'fail',
+           data: 'Photo does not belong to this user.',
+       });
+   }
+
+   try {
+       // Save the updated photo
+       const updatedPhoto = await photo.save(validData);
+       debug("Updated album successfully: %O", updatedPhoto);
+
+       res.status(200).send({
+           status: 'success',
+           data: {
+               updatedPhoto
+           },
+       });
+
+   } catch (error) {
+       res.status(500).send({
+           status: 'error',
+           message: 'Exception thrown in database when updating photo.',
+       });
+       throw error;
+   }
+}
 
 
 
 module.exports = {
   read,
-  singlePhoto,
-  create
+  show,
+  create,
+  update
 };
