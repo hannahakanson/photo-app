@@ -5,7 +5,7 @@
  const debug = require('debug')('photoapp:album_controller');
  const { matchedData, validationResult } = require('express-validator');
  const models = require('../models');
- const { Album } = require('../models');
+ 
 
 
 //** Get all albums
