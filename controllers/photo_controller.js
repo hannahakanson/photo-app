@@ -30,8 +30,6 @@ const read = async (req, res) => {
 
 
 
-
-
 //** Get single photo
 /*
  GET /
@@ -73,7 +71,6 @@ const create = async (req, res) => {
 
 
   const validData = matchedData(req);
-  validData.user_id = req.user.id;
 
   try {
       const photo = await new models.Photo(validData).save();

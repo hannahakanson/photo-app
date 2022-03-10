@@ -147,7 +147,6 @@ const show = async (req, res) => {
 
     // Save the valid data
     const validData = matchedData(req);
-
     const album = await new models.Album({ id: req.params.albumId }).fetch({withRelated:['photos']});
 
     // Get the photos of the album
