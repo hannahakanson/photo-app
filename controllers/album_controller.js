@@ -128,6 +128,24 @@ const show = async (req, res) => {
                 data: 'Album does not belong to this user.',
             });
     }
+
+     // Load the auth users photos
+   await req.user.load('photos');
+
+   const userPhotos = req.user.related('photos');
+
+   // Check if the photo belongs to the user
+   const userPhoto = userPhotos.find(photo => photo.id == req.params.photoId);
+
+   // Return fail message if photo doesn't belong to the user/does not exist
+   if (!userPhoto) {
+    return res.status(404).send({
+                status: 'fail',
+                data: 'Photo does not belong to this user.',
+            });
+    }
+
+    // Save the valid data
     const validData = matchedData(req);
 
     const album = await new models.Album({ id: req.params.albumId }).fetch({withRelated:['photos']});
@@ -147,7 +165,7 @@ const show = async (req, res) => {
 	}
 
 	try {
-        //Add the photo to album
+        //Add the photo to the album
 		const result = await album.photos().attach(validData.photo_id);
 		debug("Added photo to album:", result);
 
@@ -172,27 +190,29 @@ const show = async (req, res) => {
  PUT /
 */
 const update = async (req, res) => {
-	const albumId = req.params.albumId;
-
-	// Check if album exists
-	const album = await new models.Album({ id: albumId }).fetch({ require: false });
-	if (!album) {
-		debug("Album to update was not found. %o", { id: albumId });
-		res.status(404).send({
-			status: 'fail',
-			data: 'Album Not Found',
-		});
-		return;
-	}
-
 	// Check for validation errors
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
 		return res.status(422).send({ status: 'fail', data: errors.array() });
 	}
 
-	// Get the validated data from the request
-	const validData = matchedData(req);
+    // Load the auth users albums
+   await req.user.load('albums');
+
+   const userAlbums = req.user.related('albums');
+
+   // Check if the album belongs to the user
+   const userAlbum = userAlbums.find(album => album.id == req.params.albumId);
+
+   // Return fail message if album doesn't belong to the user/does not exist
+   if (!userAlbum) {
+    return res.status(404).send({
+                status: 'fail',
+                data: 'Album does not belong to this user.',
+            });
+    }
+    const validData = matchedData(req);
+    const album = await new models.Album({ id: req.params.albumId }).fetch();
 
 	try {
 		const updatedAlbum = await album.save(validData);
