@@ -8,23 +8,23 @@
 
 
  /**
-  * Create Photo validation rules
+  * Create photo 
   */
 
 const createRules = [
     body('title').exists().isLength({ min: 3 }),
-    body('url').exists().isURL(),
-    body('comment').optional().isLength({ min: 3 })
+    body('url').exists().isURL().isLength({ min: 3 }),
+    body('comment').exists().isLength({ min: 3 })
 ];
 
 
  /**
-  * Update Photo validation rules
+  * Update Photo
   */
   const updateRules = [
     body('title').optional().isLength({ min: 4 }),
-    body('url').optional(),
-    body('comment').optional()
+    body('url').optional().isURL().isLength({ min: 3 }),
+    body('comment').optional().isLength({ min: 3 })
 ];
 
 
@@ -33,5 +33,3 @@ module.exports = {
     createRules,
     updateRules,
 }
-
-// 

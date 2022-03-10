@@ -23,17 +23,9 @@
 	body('last_name').exists().isLength({ min: 2 }),
 ];
  
- /**
-  * Update User validation rules
-  
-  * 
-  */
- const updateRules = [
-     body('last_name').exists().isLength({ min: 4 }),
- ];
+
  
  module.exports = {
      createRules,
-     updateRules,
  }
  

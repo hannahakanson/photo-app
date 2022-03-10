@@ -7,7 +7,7 @@
 
  
  /**
-  * Create album validation rules
+  * Create album
   */
  const createRules = [
      body('title').exists().isLength({ min: 3 }),
@@ -15,12 +15,16 @@
  ];
 
  /**
-  * Add photo to album validation rules
+  * Add photo to album
   */
  
   const addPhotoRules = [
      body('photo_id').exists().isInt(),
  ];
+
+  /**
+  * Update album
+  */
 
  const updateRules = [
     body('title').optional().isLength({ min: 3 }),
