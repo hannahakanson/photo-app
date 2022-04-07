@@ -69,23 +69,19 @@ const create = async (req, res) => {
       return res.status(422).send({ status: 'fail', data: errors.array() });
   }
 
+
   const validData = matchedData(req);
 
   try {
-    //Save photo
-    await new models.Photo(validData).save();
+      const photo = await new models.Photo(validData).save();
+      debug("Created new photo successfully: ", photo);
 
-    //Get the new photo
-	const photo = await models.Photo.where("url", req.body.url).fetch({
-		columns: ["user_id", "url", "title", "comment", "id"],
-	});
-
-    res.send({
-        status: 'success',
-        data: {
+      res.send({
+          status: 'success',
+          data: {
             photo
-        },
-    });
+          },
+      });
 
   } catch (error) {
       res.status(500).send({
