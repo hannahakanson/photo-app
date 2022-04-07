@@ -64,32 +64,34 @@ const show = async (req, res) => {
 
 const create = async (req, res) => {
   
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-      return res.status(422).send({ status: 'fail', data: errors.array() });
-  }
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(422).send({ status: 'fail', data: errors.array() });
+    }
+    
+    const userId = req.user.id;
+    const validData = matchedData(req);
+    validData.user_id = userId;
+    
+    
+    try {
+        const photo = await new models.Photo(validData).save();
+        
+        res.send({
+            status: 'success',
+            data: {
+                photo
+            }
+        });
+    
+    } catch (error) {
+        res.status(500).send({
+            status: 'error',
+            message: 'Exception thrown in database when creating a new photo',
+        });
 
-
-  const validData = matchedData(req);
-
-  try {
-      const photo = await new models.Photo(validData).save();
-      debug("Created new photo successfully: ", photo);
-
-      res.send({
-          status: 'success',
-          data: {
-            photo
-          },
-      });
-
-  } catch (error) {
-      res.status(500).send({
-          status: 'error',
-          message: 'Exception thrown in database when creating a new photo.',
-      });
-      throw error;
-  }
+        throw error;
+    }
 }
 
 
