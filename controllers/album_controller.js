@@ -5,7 +5,9 @@
  const debug = require('debug')('photoapp:album_controller');
  const { matchedData, validationResult } = require('express-validator');
  const models = require('../models');
- 
+
+  // Save the valid data
+  const validData = matchedData(req);
 
 
 //** Get all albums
@@ -54,9 +56,6 @@ const show = async (req, res) => {
         data: chosenAlbum
     })
 }
-
-
-    
 
 
 //** Post new album
@@ -135,7 +134,7 @@ const show = async (req, res) => {
    const userPhotos = req.user.related('photos');
 
    // Check if the photo belongs to the user
-   const userPhoto = userPhotos.find(photo => photo.id == req.params.photoId);
+   const userPhoto = userPhotos.find(photo => photo.id == validData.photo_id);
 
    // Return fail message if photo doesn't belong to the user/does not exist
    if (!userPhoto) {
@@ -145,8 +144,6 @@ const show = async (req, res) => {
             });
     }
 
-    // Save the valid data
-    const validData = matchedData(req);
     const album = await new models.Album({ id: req.params.albumId }).fetch({withRelated:['photos']});
 
     // Get the photos of the album
