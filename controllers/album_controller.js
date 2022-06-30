@@ -6,9 +6,6 @@
  const { matchedData, validationResult } = require('express-validator');
  const models = require('../models');
 
-  // Save the valid data
-  const validData = matchedData(req);
-
 
 //** Get all albums
  /**
@@ -105,6 +102,9 @@ const show = async (req, res) => {
  */
 
  const addPhoto = async (req, res) => {
+
+    // Save the valid data
+    const validData = matchedData(req);
 	
     // Check for validation errors
 	const errors = validationResult(req);
